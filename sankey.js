@@ -8,7 +8,7 @@ let sankeyMargin = {top: 10, right: 30, bottom: 30, left: 60},
     sankeyHeight = height - 50;
 
 const { sankey, sankeyLinkHorizontal } = d3;
-d3.csv("medals.csv").then(rawData =>{
+d3.csv("dataset/medals.csv").then(rawData =>{
     console.log("rawData", rawData);
 
     function makeSankey(countryName, rawData){
