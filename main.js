@@ -16,7 +16,7 @@ var colorScale = d3.scaleSequential(customInterpolateBlues);
 // Load data
 d3.queue()
 .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
-.defer(d3.csv, "medals_total.csv", function(d) {
+.defer(d3.csv, "dataset/medals_total.csv", function(d) {
     medalData.set(d.country_code, {
         name: d.country_long || d.country,
         gold: +d["Gold Medal"],
