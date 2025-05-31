@@ -31,8 +31,8 @@ dataTreeMap = {
 
 const svg = d3.select("svg"); // creating a SVG 
 
-const width = 500;
-const height = 400;
+const width = 400;
+const height = 800;
 
 const root = d3.hierarchy(dataTreeMap)
     .sum(d => d.value)
@@ -43,19 +43,36 @@ d3.treemap()
     .size([width, height])
     .padding(4)
     (root);
+const tooltip = d3.select("#tooltip");
 
 // drawing the actual squares here to show there 
 svg.selectAll("rect")
     .data(root.leaves())
     .enter()
     .append("rect")
-        .attr('x', x => x.x0) // the x placement 
-        .attr('y', y => y.y0) // y placement 
-        // the size depends on how many medals each country got 
-        .attr('width', x => x.x1 - x.x0)
-        .attr('height', y => y.y1 - y.y0)
-        .style("stroke", "white")
-        .style("fill", color => d3.interpolateViridis(color.value / root.value)); // based on the rect so the color gradient is here 
+    .attr("x", function(d) { return d.x0; })
+    .attr("y", function(d) { return d.y0; })
+    .attr("width", function(d) { return d.x1 - d.x0; })
+    .attr("height", function(d) { return d.y1 - d.y0; })
+    .style("stroke", "white")
+    .style("fill", function(d) {
+        return d3.interpolateViridis(d.value / root.value); // to change the color it's here 
+    })
+    // i never did toolkit so used chatgpt to understand how to use a toolkit to showcase a text of how many medals for each section 
+    .on("mouseover", function(d) {
+        tooltip
+            .style("display", "block")
+            .html(`<strong>${d.data.name}</strong><br># of Medals: ${d.value}`);
+    })
+    .on("mousemove", function() {
+        tooltip
+            .style("left", (d3.event.pageX + 10) + "px")
+            .style("top", (d3.event.pageY + 30) + "px");
+    })
+    .on("mouseout", function() {
+        tooltip.style("display", "none");
+    });
+
 
 // all the names 
 svg.selectAll("text").data(root.leaves()).enter()
@@ -63,7 +80,7 @@ svg.selectAll("text").data(root.leaves()).enter()
         .attr("x", d => d.x0 + 3)
         .attr("y", d => d.y0 + 20)
         .text(d => d.data.name)
-        .attr("font-size", "10px")
+        .attr("font-size", "12px")
         .attr("fill", "white")
 
 });
