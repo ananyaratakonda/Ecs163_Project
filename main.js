@@ -5,7 +5,8 @@ Used https://d3-graph-gallery.com/graph/treemap_basic.html as a reference
 
 d3.csv("dataset/medals.csv").then(data => {
 
-let countryFilteredData = data.filter(d => d.country === "United States");
+    // can change the country here for the tree map 
+let countryFilteredData = data.filter(d => d.country === "Great Britain");
 
 // to store all the different disciplines to then sort and find out which has the most medals 
 const allDisciplines = {}; 
