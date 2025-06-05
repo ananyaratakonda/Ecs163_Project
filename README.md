@@ -12,7 +12,7 @@ git clone https://github.com/ananyaratakonda/Ecs163_Project.git
 
 The dataset we used can be found here: https://www.kaggle.com/datasets/piterfm/paris-2024-olympic-summer-games?select=medals_total.csv
 ### Project Layout:  
-Our Final and Main visualization can be found on the main branch. The layout can be found inside of **`index.html`** w, and **`main.js`** was where we used D3.js to create the visualizations and add functionality to them. **`styles.css`** is where the styling can be found. The **`Dataset`** folder, consists of 2 datasets that we used to implement this project: **`medals.csv`** and **`medals_total.csv`**
+Our Final and Main visualization can be found on the main branch. The layout can be found inside of **`index.html`** w, and **`main.js`** was where we used D3.js to create the visualizations and add functionality to them. **`styles.css`** is where the styling can be found. The **`dataset`** folder, consists of 2 datasets that we used to implement this project: **`medals.csv`** and **`medals_total.csv`**
 
 Additionally we have these branches that we used to work on this project: 
 
