@@ -1,9 +1,10 @@
+// Set up SVG and dimensions
 var svg = d3.select("#map"),
     width = +svg.attr("width"),
     height = +svg.attr("height"),
     tooltip = d3.select("#tooltip");
 
-// World Map Projection
+// Map projection and path generator
 var projection = d3.geoNaturalEarth1().scale(130).translate([width / 2, height / 2]);
 var path = d3.geoPath().projection(projection);
 var medalData = d3.map();
@@ -13,7 +14,7 @@ function customInterpolateBlues(t) {
     return d3.interpolateBlues(t * 0.7 + 0.3); }
 var colorScale = d3.scaleSequential(customInterpolateBlues);
 
-// Load data
+// Load map and medal data using d3.json
 d3.queue()
     .defer(d3.json, "https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
     .defer(d3.csv, "dataset/medals_total.csv", function(d) {
@@ -26,16 +27,16 @@ d3.queue()
             shortName: d.country
         });
     })
-    .await(function(error, topo) {
-        if (error) throw error;
+    .await(function(error, topo) { if (error) throw error;
 
-// Making the medal data to work with 
+// Set domain for color scale( Min = 1 and Max = Max number of medals)
 var medalValues = Array.from(medalData.values(), d => d.total).filter(d => d > 0);
 var maxMedals = d3.max(medalValues) || 1;
 colorScale.domain([1, maxMedals]);
 
-// Making the svg to work with for the world map
+  // Group to allow zoom transform
 const g = svg.append("g"); 
+    // Background click to reset zoom
     svg.insert("rect", ":first-child")
     .attr("width", width)
     .attr("height", height)
@@ -47,7 +48,6 @@ const g = svg.append("g");
         .attr("transform", "translate(0,0) scale(1)");
     g.selectAll(".country").classed("selected", false);
 });
-
 
 /**
  * The beginning of treemap function.
@@ -119,7 +119,7 @@ function drawTreemap(countryName) {
             .attr("height", function(d) { return d.y1 - d.y0; })
             .style("stroke", "white")
             .style("fill", function(d) {
-                return d3.interpolateViridis(d.value / root.value); // to change the color it's here 
+               return d3.interpolateBlues((d.value / root.value*2)+0.5); // to change the color it's here 
             })
             // used chatgpt to understand how to use a toolkit to showcase a text of how many medals for each section 
             .on("mouseover", function(d) {
@@ -159,9 +159,10 @@ function drawSankey(countryName) {
 
         //sankey chart dimensions
         const width = document.getElementById("sidebar-container").clientWidth;
-        const height = 400;
+        const height = document.getElementById("sidebar-container").clientHeight;
+        // const height = 500;
         // added some scaling to customize fit into the sidebar container
-        const sankeyMargin = { top: height * 0.05, right: width * 0.05, bottom: 0, left: width * 0.2 };
+        const sankeyMargin = { top: height * 0.01, right: width * 0.05, bottom: 0, left: width * 0.2 }; // changes top margin to height *0.01 instead of 0.05
         const sankeyWidth = width - sankeyMargin.left - sankeyMargin.right;
         const sankeyHeight = height - sankeyMargin.top - sankeyMargin.bottom;
        
@@ -322,9 +323,9 @@ g.selectAll("path")
     .attr("fill", function(d) {
     var country = medalData.get(d.id);
     var total = (country && country.total) ? country.total : 0;
-        return total === 0 ? "#e0e0e0" : colorScale(total);
+        return total === 0 ? "#e0e0e0" : colorScale(total); //Setting color for countries with medal count zero
     })
-    .attr("stroke", "white")
+    .attr("stroke", "white")    //white border for countries
     .attr("stroke-width", "0.7px")
     .on("mouseover", function(d) {
     var country = medalData.get(d.id) || {
@@ -336,26 +337,31 @@ d3.select(this)
 
 tooltip.html(`
     <div class="tooltip-title">${country.name}</div>
-    <div class="tooltip-value">🥇 ${country.gold} 🥈 ${country.silver} 🥉 ${country.bronze}</div>
+    <div>🥇 ${country.gold} 🥈 ${country.silver} 🥉 ${country.bronze}</div>
     <div class="tooltip-total">Total: ${country.total}</div>
-`).style("opacity", 1);
+    `).style("opacity", 1);
 })
+//Update tooltip when over countries
     .on("mousemove", function() {
-    const [x, y] = d3.mouse(svg.node()); 
-    tooltip
-    .style("left", (x + 8) + "px")
-    .style("top", (y + 30) + "px");
+        const [x, y] = d3.mouse(svg.node()); 
+        tooltip
+            .style("left", (x + 8) + "px")
+            .style("top", (y + 30) + "px");
     })
+       //Reset and hide tooltip when click outside of country
     .on("mouseout", function() {
-    d3.select(this).attr("stroke-width", "0.7px");
-    tooltip.style("opacity", 0);
+        d3.select(this).attr("stroke-width", "0.7px");
+        tooltip.
+            style("opacity", 0);
     })
+     // Zoom in effect on click
     .on("click", function(d) {
-    g.selectAll(".country").classed("selected", false);
+        g.selectAll(".country")
+            .classed("selected", false);
     
-d3.select(this)
-    .classed("selected", true)
-    .raise();
+    d3.select(this)
+        .classed("selected", true)
+        .raise();
     
     // added this to access the country name and call the draw treemap / sankey chart functions
     var country = medalData.get(d.id) || {
@@ -379,7 +385,7 @@ d3.select(this)
         .attr("transform", `translate(${translate}) scale(${scale})`);
 
     // connect the ID by country make the name pop up when selected
-    document.getElementById("country-id").textContent = "Country ID: " + (country.name);
+    document.getElementById("country").textContent = "Country: " + (country.name);
 
     // remove the svg # when selecting different chart on the dropdown menu
     d3.select("#sidebar-container").select("#treemap-svg").remove();
@@ -387,7 +393,7 @@ d3.select(this)
 
     // get visualizations based on the country
     selectedCountryName = country.shortName; // store to use when changing between charts
-    const selectedChart = document.getElementById("viz-select").value;
+    const selectedChart = document.getElementById("select").value;
 
     // only show the chart if it has data to show
     if (country.total > 0) {
@@ -399,13 +405,12 @@ d3.select(this)
         }
     // give a message if the information / charts are not available.
     } else if (country.total === 0) {
-        document.getElementById("sidebar-container").textContent = `No medal data avilable for ${country.name}.`;
+        document.getElementById("sidebar-container").textContent = `The data suggests that ${country.name} didn't participate in the 2024 Olympics.`;
     }
-
     });
 
 // this changes the charts when interacting with the viz select (dropdown)
-d3.select("#viz-select").on("change", function() {
+d3.select("#select").on("change", function() {
     
     selectedChart = this.value;
 
@@ -424,43 +429,50 @@ d3.select("#viz-select").on("change", function() {
     }
 });
 
+// Add gradient legend
+    var legend = svg.append("g")
+        .attr("class", "legend")
+        .attr("transform", "translate(30,30)");
 
-// legend
-var legend = svg.append("g")
-    .attr("class", "legend")
-    .attr("transform", "translate(30,30)");
+    var defs = svg.append("defs");
 
-var defs = svg.append("defs");
-var gradient = defs.append("linearGradient")
-    .attr("id", "gradient")
-    .attr("x1", "0%").attr("y1", "0%")
-    .attr("x2", "100%").attr("y2", "0%");
+    var gradient = defs.append("linearGradient")
+        .attr("id", "gradient")
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "100%")
+        .attr("y2", "0%");
 
-gradient.selectAll("stop")
-.data([
-    { offset: "0%", color: customInterpolateBlues(0) },
-    { offset: "100%", color: customInterpolateBlues(1) }
-])
-    .enter().append("stop")
-    .attr("offset", d => d.offset)
-    .attr("stop-color", d => d.color);
+    //Defining color stops
+    gradient.selectAll("stop")
+        .data([
+            { offset: "0%", color: customInterpolateBlues(0) }, //Start color
+            { offset: "100%", color: customInterpolateBlues(1) } //End color
+        ])
+        .enter().append("stop")
+        .attr("offset", d => d.offset)
+        .attr("stop-color", d => d.color);
+        
+    //Shape of gradient bar
+    legend.append("rect")
+        .attr("width", 200)
+        .attr("height", 20)
+        .style("fill", "url(#gradient)");
 
-legend.append("rect")
-    .attr("width", 200)
-    .attr("height", 20)
-    .style("fill", "url(#gradient)");
+    //Axis range
+    var x = d3.scaleLinear()
+        .domain([0, maxMedals])
+        .range([0, 200]);
 
-var x = d3.scaleLinear()
-    .domain([0, maxMedals])
-    .range([0, 200]);
+    //Axis to show medal count
+    legend.append("g")
+        .attr("transform", "translate(0,20)")
+        .call(d3.axisBottom(x).ticks(5));
 
-legend.append("g")
-    .attr("transform", "translate(0,20)")
-    .call(d3.axisBottom(x).ticks(5));
-
-legend.append("text")
-    .attr("x", 100)
-    .attr("y", -5)
-    .attr("text-anchor", "middle")
-    .text("Total Medals");
+    //Legend Title
+    legend.append("text")
+        .attr("x", 100)
+        .attr("y", -5)
+        .attr("text-anchor", "middle")
+        .text("Total Medals");
 });
