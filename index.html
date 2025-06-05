@@ -12,10 +12,9 @@
 </head>
 <body>
      <h2 style="text-align: center;">Paris 2024 Olympic Games</h2>
-  <div id="main-layout">
+  <div id="main-container">
     <div id="map-container">
         <h3>Olympic Medals by Country</h3>
-        <div class="chart-title"></div>
         <svg id="map" width="600" height="600"></svg>
         <div id="tooltip" class="tooltip"></div>
         <div id="tree-tooltip" class="tooltip" style="
@@ -38,12 +37,12 @@
         </div>
         
     </div>
-    <div id="sidebar">
+    <div id="right-container">
         <h3>Medal Breakdown</h3>
         <h4 id="country">Country: </h4>
-        <div class="control-group">
-            <label for="viz-select">Select Visualization:</label>
-            <select id="viz-select">
+        <div class="RHS-nested-container">
+            <label>Select Visualization:</label>
+            <select id="select">
                 <option value="treemap">Tree Map</option>
                 <option value="sankey">Sankey </option>
             </select>
