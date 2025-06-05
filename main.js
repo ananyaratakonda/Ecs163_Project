@@ -159,7 +159,7 @@ function drawSankey(countryName) {
 
         //sankey chart dimensions
         const width = document.getElementById("sidebar-container").clientWidth;
-        const height = 500;
+        const height = document.getElementById("sidebar-container").clientHeight;
         // added some scaling to customize fit into the sidebar container
         const sankeyMargin = { top: height * 0.05, right: width * 0.05, bottom: 0, left: width * 0.2 };
         const sankeyWidth = width - sankeyMargin.left - sankeyMargin.right;
