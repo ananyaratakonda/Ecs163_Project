@@ -29,9 +29,12 @@ d3.queue()
     .await(function(error, topo) {
         if (error) throw error;
 
+// Making the medal data to work with 
 var medalValues = Array.from(medalData.values(), d => d.total).filter(d => d > 0);
 var maxMedals = d3.max(medalValues) || 1;
 colorScale.domain([1, maxMedals]);
+
+// Making the svg to work with for the world map
 const g = svg.append("g"); 
     svg.insert("rect", ":first-child")
     .attr("width", width)
@@ -63,6 +66,7 @@ function drawTreemap(countryName) {
         let countryFilteredData = data.filter(d => d.country === countryName);
         const allDisciplines = {}; 
 
+        // Filter the country data according to discipline
         countryFilteredData.forEach(d => {
         if (!allDisciplines[d.discipline]) {
             allDisciplines[d.discipline] = 0;
@@ -70,10 +74,12 @@ function drawTreemap(countryName) {
             allDisciplines[d.discipline]++;
         });
 
+        // Get the top 10 disciplines and sort them 
         const top10 = Object.entries(allDisciplines)
         .sort((a, b) => b[1] - a[1]) // most to least
         .slice(0, 10); //  want only the top 10 
 
+        // Assign the top10 sports and their corresponding medal counts.
         dataTreeMap = {
         name: `${countryName} Medals`,
         children: top10.map(([name, value]) => ({ name, value })) // need to do this so it works for the root later 
@@ -101,7 +107,7 @@ function drawTreemap(countryName) {
             (root);
             
         const treetooltip = d3.select("#tree-tooltip"); // specify tooltip
-// console.log(d.data.name)
+
         // drawing the actual squares here to show there 
         svg.selectAll("rect")
             .data(root.leaves())
@@ -115,7 +121,7 @@ function drawTreemap(countryName) {
             .style("fill", function(d) {
                 return d3.interpolateViridis(d.value / root.value); // to change the color it's here 
             })
-            // i never did toolkit so used chatgpt to understand how to use a toolkit to showcase a text of how many medals for each section 
+            // used chatgpt to understand how to use a toolkit to showcase a text of how many medals for each section 
             .on("mouseover", function(d) {
                 treetooltip
                     .style("display", "block")
@@ -130,7 +136,7 @@ function drawTreemap(countryName) {
                 treetooltip.style("display", "none");
             });
 
-        // all the names 
+        // all the names for each rectangle
         svg.selectAll("text").data(root.leaves()).enter()
             .append("text")
                 .attr("x", d => d.x0 + 3)
@@ -246,6 +252,7 @@ function drawSankey(countryName) {
         // assign new tooltip specific to the sankey
         const sankeytooltip = d3.select("#sankey-tooltip");
 
+        // add the links and tooltips
         sankeyGroup.append("g")
             .attr("fill", "none")
             .selectAll("path")
@@ -305,7 +312,7 @@ function drawSankey(countryName) {
 }
 // end of sankey
 
-// Continue the world map -> Draw countries
+// Continue the world map -> Draw countries on the map
 g.selectAll("path")
     .data(topo.features)
     .enter()
@@ -357,7 +364,7 @@ d3.select(this)
         shortName: d.country
     };
     
-    //Zoom-in:)
+    // Zoom-in coordinates
     const bounds = path.bounds(d);
     const dx = bounds[1][0] - bounds[0][0];
     const dy = bounds[1][1] - bounds[0][1];
@@ -366,6 +373,7 @@ d3.select(this)
     const scale = Math.max(1, Math.min(4, 0.7 / Math.max(dx / width, dy / height)));
     const translate = [width / 2 - scale * x, height / 2 - scale * y];
 
+    // Makes the transition for the zoom in
     g.transition()
         .duration(750)
         .attr("transform", `translate(${translate}) scale(${scale})`);
@@ -402,7 +410,7 @@ d3.select("#viz-select").on("change", function() {
     selectedChart = this.value;
 
     if (selectedCountryName) {
-        // removes the previous chart to make space for the new one based on dropdown selection
+        // removes the previous chart / item to make space for the new one based on dropdown selection and information
         d3.select("#sidebar-container").select("#treemap-svg").remove();
         d3.select("#sidebar-container").select("#sankey-svg").remove();
         d3.select("#sidebar-container").text("");
