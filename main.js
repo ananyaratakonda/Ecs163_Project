@@ -119,7 +119,7 @@ function drawTreemap(countryName) {
             .attr("height", function(d) { return d.y1 - d.y0; })
             .style("stroke", "white")
             .style("fill", function(d) {
-                return d3.interpolateViridis(d.value / root.value); // to change the color it's here 
+               return d3.interpolateBlues((d.value / root.value*2)+0.5); // to change the color it's here 
             })
             // used chatgpt to understand how to use a toolkit to showcase a text of how many medals for each section 
             .on("mouseover", function(d) {
@@ -159,7 +159,7 @@ function drawSankey(countryName) {
 
         //sankey chart dimensions
         const width = document.getElementById("sidebar-container").clientWidth;
-        const height = 400;
+        const height = 500;
         // added some scaling to customize fit into the sidebar container
         const sankeyMargin = { top: height * 0.05, right: width * 0.05, bottom: 0, left: width * 0.2 };
         const sankeyWidth = width - sankeyMargin.left - sankeyMargin.right;
@@ -379,7 +379,7 @@ d3.select(this)
         .attr("transform", `translate(${translate}) scale(${scale})`);
 
     // connect the ID by country make the name pop up when selected
-    document.getElementById("country-id").textContent = "Country ID: " + (country.name);
+    document.getElementById("country").textContent = "Country: " + (country.name);
 
     // remove the svg # when selecting different chart on the dropdown menu
     d3.select("#sidebar-container").select("#treemap-svg").remove();
