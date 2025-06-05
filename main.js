@@ -399,7 +399,7 @@ d3.select(this)
         }
     // give a message if the information / charts are not available.
     } else if (country.total === 0) {
-        document.getElementById("sidebar-container").textContent = `No medal data avilable for ${country.name}.`;
+        document.getElementById("sidebar-container").textContent = `The data suggests that ${country.name} didn't participate in the 2024 Olympics.`;
     }
 
     });
