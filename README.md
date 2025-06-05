@@ -8,7 +8,8 @@ git clone https://github.com/ananyaratakonda/Ecs163_Project.git
 ```
 2. Then please open the **`index.html`** with Live Server
 
-### Project Description:
+### Project Description:  
+This project is an interactive data visualization dashboard that enables users to explore the 2024 Olympics data through a world heatmap. By clicking on a country, further information is displayed via a Sankey diagram and treemap chart. The Sankey diagram provides a medal breakdown of Olympic disciplines and the treemap chart provides a hierarchical ranking of disciplines. We hope this visual tool is intuitive and helps in understanding the complex data of the Olympics.  
 
 The dataset we used can be found here: https://www.kaggle.com/datasets/piterfm/paris-2024-olympic-summer-games?select=medals_total.csv
 ### Project Layout:  
